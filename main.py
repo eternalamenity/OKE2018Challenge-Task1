@@ -44,10 +44,21 @@
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 from pynif import NIFCollection
+import rdflib
 import re
 import nltk
 from nltk.corpus import stopwords 
 nltk.download('stopwords')
+
+
+class WordAndClass():
+    "Stores words and theirs classes"
+    def __init__(self, word, wordsClass):
+        self.word = word
+        self.wordsClass = wordsClass
+    
+    def printText(self):
+        print("Word: " + self.word + " matches to " + self.wordsClass + " class")
 
 def remove_stopwords(tokens):
     stop_words = set(stopwords.words('english'))
@@ -66,19 +77,22 @@ def tokenize():
 
 def sendDBPediaQuery():
     wordsList = tokenize()
-    sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+    output=[]
 
     for word in wordsList:
-        sparql.setQuery("""
-                SELECT ?label
-                WHERE { <http://dbpedia.org/resource/"""+word+"""> rdf:type ?label }
-        """)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
+        g=rdflib.Graph()
+        endpoint = 'http://dbpedia.org/resource/' + word
+        g.load(endpoint)
+        for s,p,o in g:
+            if word in s and 'Person' in o:
+                output.append(WordAndClass(word, 'Person'))
+            elif word in s and 'Place' in o:
+                output.append(WordAndClass(word, 'Place'))
+            elif word in s and 'Organisation' in o:
+                output.append(WordAndClass(word, 'Organisation'))
 
-        print("Example for word: ", word)
-        for result in results["results"]["bindings"]:
-            print(result)
-                    
+    return output
 
-sendDBPediaQuery()
+listOfWordsAndClassObjects = sendDBPediaQuery()
+for x in listOfWordsAndClassObjects:
+    x.printText()
