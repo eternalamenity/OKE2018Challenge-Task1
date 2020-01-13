@@ -1,5 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from pynif import NIFCollection
+from itertools import tee, islice, chain
 import rdflib
 import re
 import nltk
@@ -47,26 +48,39 @@ def capitalizeList(wordsList):
         newList.append(word.title())
     return newList
 
+def previous_and_next(some_iterable):
+    prevs, items, nexts = tee(some_iterable, 3)
+    prevs = chain([None], prevs)
+    nexts = chain(islice(nexts, 1, None), [None])
+    return zip(prevs, items, nexts)
+
 def getSentencesFromWords(tokens):         
-    serie = ''
+     serie = ''
     series = []
     counter = 0
-    for token in tokens:
+    for previous, token, nxt in previous_and_next(tokens):
         if  token[0].isupper():
             if  serie == '':
                 serie = serie + token
+                series += [serie]
             else:
                 serie = serie + '_' + token
             counter = counter + 1
             if counter == 2:
-                counter = 0
                 series += [serie]
-                serie = ''
+                if (nxt[0].isupper() and (serie.count('_')) == 1):
+                    serie = serie + '_' + nxt
+                    series += [serie]
+                counter = 0
+                serie = ''  
         else:
             if serie != '':
                 series += [serie]
             series += [token]
             serie = ''
+            counter = 0
+            
+    series = list(set(series))
     return series
 
 def sendDBPediaQuery(wordsList, wordClasses):
