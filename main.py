@@ -4,6 +4,7 @@ from itertools import tee, islice, chain
 import rdflib
 import re
 import nltk
+import numpy as np
 from nltk.corpus import stopwords 
 nltk.download('stopwords')
 
@@ -55,7 +56,7 @@ def previous_and_next(some_iterable):
     return zip(prevs, items, nexts)
 
 def getSentencesFromWords(tokens):         
-     serie = ''
+    serie = ''
     series = []
     counter = 0
     for previous, token, nxt in previous_and_next(tokens):
@@ -101,7 +102,12 @@ def sendDBPediaQuery(wordsList, wordClasses):
                 finalText = re.sub('http://dbpedia.org/ontology/', '', result['label']['value'])
                 if isWordInSearchedClasses(finalText, wordClasses):
                     print('Word: ' + word + ', class: ' + result['label']['value'])
-                    output.append(word)     
+                    output.append(word)
+                else: 
+                    foundWordClass = isOntologyOfSubclass(word)
+                    if foundWordClass in wordClasses:
+                        print('Word: ' + word + ', class: ' + 'http://dbpedia.org/ontology/' + foundWordClass)
+                        output.append(word)
     return output
 
 def isWordInSearchedClasses(word, wordClasses):
@@ -146,6 +152,45 @@ def fromStringToOutputFile(outputString, start, end, textLen):
     f_input.close()
 
 
+def isOntologyOfSubclass(word):
+    wordClasses = ['Person', 'Place', 'Organisation']
+    finalText = "Initial Text"
+    while finalText != None:
+        sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+        sparql.setQuery("""
+                    SELECT ?value
+                    WHERE { <http://dbpedia.org/ontology/"""+word+"""> rdfs:subClassOf ?value }
+            """)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+        values = results['results']['bindings']
+        if values:
+            if 'http://dbpedia.org/ontology/' in str(values):
+                uniqueList = unique(values)
+                for x in uniqueList:
+                    singleOntology = x['value']['value']
+                    finalText = re.sub('http://dbpedia.org/ontology/', '', singleOntology)
+                    # print(finalText)
+                    word = finalText
+                    if word in wordClasses:
+                        return word
+                    break
+            else:
+                finalText = None
+        else:
+            finalText = None
+    return 'False'
+
+
+def unique(list1): 
+    # intilize a null list 
+    unique_list = [] 
+    for x in list1: 
+        # check if exists in unique_list or not 
+        if x not in unique_list: 
+            unique_list.append(x) 
+    return unique_list 
+
 if __name__ == "__main__":
     wordClasses = ['Person', 'Place', 'Organisation']
 
@@ -165,3 +210,4 @@ if __name__ == "__main__":
         start, end, textLen = findIndexesOfFoundWordInOriginalText(word, './input')
         print("Word "+ word + " position [" + str(start) + ', ' + str(end) + ']')
         fromStringToOutputFile(word, start, end, textLen)
+
