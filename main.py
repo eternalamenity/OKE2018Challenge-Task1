@@ -1,10 +1,9 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from pynif import NIFCollection
 from itertools import tee, islice, chain
-import rdflib
 import re
 import nltk
-import numpy as np
+from tkinter import *
 from nltk.corpus import stopwords 
 nltk.download('stopwords')
 
@@ -135,19 +134,27 @@ def findIndexesOfFoundWordInOriginalText(word, file):
                 textLen = len(final) - 1
                 return start, end, textLen
 
-def fromStringToOutputFile(outputString, start, end, textLen):
-    f = open("output","w+")
+def firstStringToOutputFile():
     f_input = open("input","r")
     contents = f_input.read()
-    f.write(contents + '\n')
+    f = open("output","w+")
+    f.write(contents)
+    f.close()
+    f_input.close()
+
+def fromStringToOutputFile(outputString, start, end, textLen):
+    f_input = open("output","r")
+    contents = f_input.read()
+    f = open("output","w+")
+    splittedOutputString = outputString.translate ({ord(c): " " for c in "!@#$%^&*()[]{};:,./<>?\|`~-=_+"})
+    f.write(contents)
     f.write('<http://example.com/example-task1#char=' + str(start) + ',' + str(end) + '>\n')
     f.write('        a                     nif:RFC5147String , nif:String ;\n')
-    f.write('        nif:anchorOf          "Florence May Harding"@en ;\n')
+    f.write('        nif:anchorOf          "' + splittedOutputString + '"@en ;\n')
     f.write('        nif:beginIndex        "' + str(start) + '"^^xsd:nonNegativeInteger ;\n')
     f.write('        nif:endIndex          "' + str(end) + '"^^xsd:nonNegativeInteger ;\n')
     f.write('        nif:referenceContext  <http://example.com/example-task1#char=0,' + str(textLen) + '> ;\n')
     f.write('        itsrdf:taIdentRef     dbpedia:' + outputString + ' .\n')
-
     f.close()
     f_input.close()
 
@@ -198,16 +205,15 @@ def fromStringToInputFile(inputText):
     f.write('@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .\n')
     f.write('@prefix dbpedia: <http://dbpedia.org/resource/> .\n')
     f.write('@prefix itsrdf: <http://www.w3.org/2005/11/its/rdf#> .\n')
-    f.write('<http://example.com/example-task1#char=0,' + len(inputText) + '>\n')
+    f.write('<http://example.com/example-task1#char=0,' + str(len(inputText)) + '>\n')
     f.write('        a                     nif:RFC5147String , nif:String , nif:Context ;\n')
     f.write('        nif:beginIndex        "0"^^xsd:nonNegativeInteger ;\n')
-    f.write('        nif:endIndex          "' + len(inputText) + '"^^xsd:nonNegativeInteger ;\n')
-    f.write('        nif:isString  "' + inputText + '"@en .\n')
+    f.write('        nif:endIndex          "' + str(len(inputText)) + '"^^xsd:nonNegativeInteger ;\n')
+    f.write('        nif:isString          "' + inputText + '"@en .\n')
     f.close()
 
-if __name__ == "__main__":
+def mainFunctionality():
     wordClasses = ['Person', 'Place', 'Organisation']
-
     # Open and purify file
     openedFile = openAndPurifyFile('./input')
     # Delete stopwords
@@ -220,8 +226,43 @@ if __name__ == "__main__":
     wordsList = capitalizeList(purifiedString)
     # Send DBPedia Queries
     output = sendDBPediaQuery(wordsList, wordClasses)
+    # Create initial OUTPUT file
+    firstStringToOutputFile()
     for word in output:
         start, end, textLen = findIndexesOfFoundWordInOriginalText(word, './input')
         print("Word "+ word + " position [" + str(start) + ', ' + str(end) + ']')
         fromStringToOutputFile(word, start, end, textLen)
 
+
+
+def clicked():
+    test = txt.get()
+    fromStringToInputFile(test)
+    mainFunctionality()
+    #Put output to box
+    data = ''
+    with open('output', 'r') as file:
+        data = file.read()
+    wynik.config(state=NORMAL)
+    wynik.insert(1.0, data)
+    wynik.config(state=DISABLED)
+
+
+if __name__ == '__main__':
+    window = Tk()
+    window.resizable(width=False, height=False)
+    window.title("Task 1")
+    window.geometry('1280x720')
+    lbl = Label(window, text="Enter your text:")
+    wynik = Text(window,height=24,width=87)
+    wynik.config(state=DISABLED)
+    lbl.grid(column=0, row=0)
+    lbl.place(x=10,y=10)
+    wynik.place(x=10,y=80)
+    txt = Entry(window, width=100)
+    txt.grid(column=1, row=0)
+    txt.place(x=100,y=10)
+    btn = Button(window, text="Check", command=clicked)
+    btn.grid(column=5, row=5)
+    btn.place(x=340,y=40)
+    window.mainloop()
