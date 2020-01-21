@@ -2,8 +2,8 @@
 @prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
 @prefix dbpedia: <http://dbpedia.org/resource/> .
 @prefix itsrdf: <http://www.w3.org/2005/11/its/rdf#> .
-<http://example.com/example-task1#char=0,146>
+<http://example.com/example-task1#char=0,55>
         a                     nif:RFC5147String , nif:String , nif:Context ;
         nif:beginIndex        "0"^^xsd:nonNegativeInteger ;
-        nif:endIndex          "146"^^xsd:nonNegativeInteger ;
-        nif:isString          "Florence May Harding studied at a school in Sydney, and with Douglas Robert Dundas , but in effect had no formal training in either botany or art."@en .
+        nif:endIndex          "55"^^xsd:nonNegativeInteger ;
+        nif:isString          "Michael Jackson and Donald Trump never met in New York."@en .

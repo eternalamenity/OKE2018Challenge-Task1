@@ -2,36 +2,36 @@
 @prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
 @prefix dbpedia: <http://dbpedia.org/resource/> .
 @prefix itsrdf: <http://www.w3.org/2005/11/its/rdf#> .
-<http://example.com/example-task1#char=0,146>
+<http://example.com/example-task1#char=0,55>
         a                     nif:RFC5147String , nif:String , nif:Context ;
         nif:beginIndex        "0"^^xsd:nonNegativeInteger ;
-        nif:endIndex          "146"^^xsd:nonNegativeInteger ;
-        nif:isString          "Florence May Harding studied at a school in Sydney, and with Douglas Robert Dundas , but in effect had no formal training in either botany or art."@en .
-<http://example.com/example-task1#char=85,105>
+        nif:endIndex          "55"^^xsd:nonNegativeInteger ;
+        nif:isString          "Michael Jackson and Donald Trump never met in New York."@en .
+<http://example.com/example-task1#char=46,54>
         a                     nif:RFC5147String , nif:String ;
-        nif:anchorOf          "Florence May Harding"@en ;
-        nif:beginIndex        "85"^^xsd:nonNegativeInteger ;
-        nif:endIndex          "105"^^xsd:nonNegativeInteger ;
-        nif:referenceContext  <http://example.com/example-task1#char=0,200> ;
-        itsrdf:taIdentRef     dbpedia:Florence_May_Harding .
-<http://example.com/example-task1#char=50,58>
+        nif:anchorOf          "New York"@en ;
+        nif:beginIndex        "46"^^xsd:nonNegativeInteger ;
+        nif:endIndex          "54"^^xsd:nonNegativeInteger ;
+        nif:referenceContext  <http://example.com/example-task1#char=0,8> ;
+        itsrdf:taIdentRef     dbpedia:New_York .
+<http://example.com/example-task1#char=20,32>
         a                     nif:RFC5147String , nif:String ;
-        nif:anchorOf          "Florence"@en ;
+        nif:anchorOf          "Donald Trump"@en ;
+        nif:beginIndex        "20"^^xsd:nonNegativeInteger ;
+        nif:endIndex          "32"^^xsd:nonNegativeInteger ;
+        nif:referenceContext  <http://example.com/example-task1#char=0,12> ;
+        itsrdf:taIdentRef     dbpedia:Donald_Trump .
+<http://example.com/example-task1#char=50,54>
+        a                     nif:RFC5147String , nif:String ;
+        nif:anchorOf          "York"@en ;
         nif:beginIndex        "50"^^xsd:nonNegativeInteger ;
-        nif:endIndex          "58"^^xsd:nonNegativeInteger ;
-        nif:referenceContext  <http://example.com/example-task1#char=0,200> ;
-        itsrdf:taIdentRef     dbpedia:Florence .
-<http://example.com/example-task1#char=-1,5>
+        nif:endIndex          "54"^^xsd:nonNegativeInteger ;
+        nif:referenceContext  <http://example.com/example-task1#char=0,4> ;
+        itsrdf:taIdentRef     dbpedia:York .
+<http://example.com/example-task1#char=0,15>
         a                     nif:RFC5147String , nif:String ;
-        nif:anchorOf          "School"@en ;
-        nif:beginIndex        "-1"^^xsd:nonNegativeInteger ;
-        nif:endIndex          "5"^^xsd:nonNegativeInteger ;
-        nif:referenceContext  <http://example.com/example-task1#char=0,200> ;
-        itsrdf:taIdentRef     dbpedia:School .
-<http://example.com/example-task1#char=4,10>
-        a                     nif:RFC5147String , nif:String ;
-        nif:anchorOf          "Sydney"@en ;
-        nif:beginIndex        "4"^^xsd:nonNegativeInteger ;
-        nif:endIndex          "10"^^xsd:nonNegativeInteger ;
-        nif:referenceContext  <http://example.com/example-task1#char=0,200> ;
-        itsrdf:taIdentRef     dbpedia:Sydney .
+        nif:anchorOf          "Michael Jackson"@en ;
+        nif:beginIndex        "0"^^xsd:nonNegativeInteger ;
+        nif:endIndex          "15"^^xsd:nonNegativeInteger ;
+        nif:referenceContext  <http://example.com/example-task1#char=0,15> ;
+        itsrdf:taIdentRef     dbpedia:Michael_Jackson .

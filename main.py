@@ -68,11 +68,12 @@ def getSentencesFromWords(tokens):
             counter = counter + 1
             if counter == 2:
                 series += [serie]
-                if (nxt[0].isupper() and (serie.count('_')) == 1):
-                    serie = serie + '_' + nxt
-                    series += [serie]
+                if(nxt != None):
+                    if (nxt[0].isupper() and (serie.count('')) == 1):
+                        serie = serie + '' + nxt
+                        series += [serie]
                 counter = 0
-                serie = ''  
+                serie = ''
         else:
             if serie != '':
                 series += [serie]
@@ -130,6 +131,11 @@ def findIndexesOfFoundWordInOriginalText(word, file):
                     final += formattedWord 
                     final += ' '
                 startIndex = final.find(word)
+
+                word = word.replace('_', ' ')
+                print(finalText)
+                # a = re.search(r'\b""" + word + """\b', formatted)
+                # print(a.start())
                 start, end = startIndex, startIndex + len(word)
                 textLen = len(final) - 1
                 return start, end, textLen
@@ -212,24 +218,33 @@ def fromStringToInputFile(inputText):
     f.write('        nif:isString          "' + inputText + '"@en .\n')
     f.close()
 
-def mainFunctionality():
+def findIndexesOfFoundWordInOriginalString(word, wholeText):
+    word = word.replace('_', ' ')
+    a = wholeText.find(word)
+    return a, a + len(word), len(word)
+
+def mainFunctionality(wholeText):
     wordClasses = ['Person', 'Place', 'Organisation']
     # Open and purify file
     openedFile = openAndPurifyFile('./input')
     # Delete stopwords
     purifiedString = tokenize(openedFile)
+    # Get sentences from string that matches to each other
+    purifiedString += getSentencesFromWords(purifiedString)
     # Remove stopwords
     purifiedString = removeStopwords(purifiedString)
-    # Get sentences from string that matches to each other
-    purifiedString = getSentencesFromWords(purifiedString)
     # Make all words/sentences start with uppercase
     wordsList = capitalizeList(purifiedString)
+    wordsList = set(wordsList)
+    wordsList = list(wordsList)
     # Send DBPedia Queries
     output = sendDBPediaQuery(wordsList, wordClasses)
     # Create initial OUTPUT file
     firstStringToOutputFile()
+    print(output)
     for word in output:
-        start, end, textLen = findIndexesOfFoundWordInOriginalText(word, './input')
+        print(word)
+        start, end, textLen = findIndexesOfFoundWordInOriginalString(word, wholeText)
         print("Word "+ word + " position [" + str(start) + ', ' + str(end) + ']')
         fromStringToOutputFile(word, start, end, textLen)
 
@@ -238,7 +253,7 @@ def mainFunctionality():
 def clicked():
     test = txt.get()
     fromStringToInputFile(test)
-    mainFunctionality()
+    mainFunctionality(test)
     #Put output to box
     data = ''
     with open('output', 'r') as file:
