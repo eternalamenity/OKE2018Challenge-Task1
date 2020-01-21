@@ -191,6 +191,20 @@ def unique(list1):
             unique_list.append(x) 
     return unique_list 
 
+
+def fromStringToInputFile(inputText):
+    f = open("input","w+")
+    f.write('@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n')
+    f.write('@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .\n')
+    f.write('@prefix dbpedia: <http://dbpedia.org/resource/> .\n')
+    f.write('@prefix itsrdf: <http://www.w3.org/2005/11/its/rdf#> .\n')
+    f.write('<http://example.com/example-task1#char=0,' + len(inputText) + '>\n')
+    f.write('        a                     nif:RFC5147String , nif:String , nif:Context ;\n')
+    f.write('        nif:beginIndex        "0"^^xsd:nonNegativeInteger ;\n')
+    f.write('        nif:endIndex          "' + len(inputText) + '"^^xsd:nonNegativeInteger ;\n')
+    f.write('        nif:isString  "' + inputText + '"@en .\n')
+    f.close()
+
 if __name__ == "__main__":
     wordClasses = ['Person', 'Place', 'Organisation']
 
